@@ -1,0 +1,77 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+/* Real-time auction styles */
+.price-updated {
+    background-color: #28a745 !important;
+    color: white !important;
+    transition: all 0.3s ease;
+    transform: scale(1.1);
+}
+
+.auction-item {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.auction-item:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.current-price {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #28a745;
+    transition: all 0.3s ease;
+}
+
+.bid-form {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.bid-input {
+    width: 120px;
+}
+
+#connection-status {
+    position: fixed !important;
+    top: 10px !important;
+    left: 10px !important;
+    z-index: 1050 !important;
+    padding: 5px 10px !important;
+    border-radius: 3px !important;
+    font-size: 12px !important;
+}

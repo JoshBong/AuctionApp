@@ -1,0 +1,121 @@
+@model List<AuctionApp.Data.Bid>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>📊 Admin Dashboard - Live Bid Monitoring</h2>
+            <p class="text-muted">Real-time view of all auction activity</p>
+        </div>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Bids (Most Recent First)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="bids-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Bid ID</th>
+                                        <th>Item</th>
+                                        <th>Bidder</th>
+                                        <th>Amount</th>
+                                        <th>Time</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var bid in Model.OrderByDescending(b => b.BidTime))
+                                    {
+                                        <tr data-bid-id="@bid.BidID">
+                                            <td>@bid.BidID</td>
+                                            <td>@bid.ItemName</td>
+                                            <td>@bid.Username</td>
+                                            <td class="fw-bold text-success">$@bid.Amount</td>
+                                            <td>@bid.BidTime.ToString("MM/dd/yyyy HH:mm:ss")</td>
+                                            <td>
+                                                <span class="badge @(bid.Role == "Admin" ? "bg-danger" : "bg-primary")">
+                                                    @bid.Role
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <h5>No Bids Yet</h5>
+                            <p>No bids have been placed yet. Bids will appear here in real-time as they are placed.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Back to Login</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Admin-specific SignalR handling for real-time bid updates
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof connection !== 'undefined' && connection) {
+                // Listen for bid updates and add new rows to the table
+                connection.on("BidUpdated", function (itemId, newPrice, bidderName) {
+                    addNewBidRow(itemId, newPrice, bidderName);
+                });
+            }
+        });
+
+        function addNewBidRow(itemId, amount, bidderName) {
+            const table = document.querySelector('#bids-table tbody');
+            if (table) {
+                const now = new Date();
+                const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+                
+                const newRow = document.createElement('tr');
+                newRow.className = 'table-success'; // Highlight new bids
+                newRow.innerHTML = `
+                    <td>New</td>
+                    <td>Item ${itemId}</td>
+                    <td>${bidderName}</td>
+                    <td class="fw-bold text-success">$${amount}</td>
+                    <td>${timeString}</td>
+                    <td><span class="badge bg-primary">Bidder</span></td>
+                `;
+                
+                // Insert at the top of the table
+                table.insertBefore(newRow, table.firstChild);
+                
+                // Remove highlight after 3 seconds
+                setTimeout(() => {
+                    newRow.classList.remove('table-success');
+                }, 3000);
+            }
+        }
+    </script>
+}

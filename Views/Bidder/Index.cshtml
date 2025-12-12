@@ -1,0 +1,60 @@
+@model List<AuctionApp.Data.AuctionItem>
+@{
+    ViewData["Title"] = "Auction Room";
+}
+
+<div class="container">
+    <h2>🔨 Live Auction Room</h2>
+    <p>Welcome, @TempData["Username"]! Place your bids below - prices update in real-time.</p>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["Message"]
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="auction-item" data-item-id="@item.ItemId">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.ItemName</h5>
+                            <p class="card-text">@item.Description</p>
+                            <div class="mb-3">
+                                <span class="text-muted">Current Price:</span>
+                                <span class="current-price">$@item.CurrentPrice</span>
+                            </div>
+                            <form asp-controller="Bidder" asp-action="PlaceBid" method="post" class="bid-form">
+                                <input type="hidden" name="itemId" value="@item.ItemId" />
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" name="amount" class="form-control bid-input" 
+                                           step="0.01" min="@(item.CurrentPrice + 0.01m)" 
+                                           placeholder="@(item.CurrentPrice + 1m)" required />
+                                    <button type="submit" class="btn btn-primary">Place Bid</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">
+            <h4>No Items Available</h4>
+            <p>There are currently no items up for auction. Please check back later!</p>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+@model AuctionApp.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Login</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="text-danger"></div>
+}
+
+<form asp-controller="Home" asp-action="Login" method="post">
+    <div>
+        <label asp-for="Username">Username</label>
+        <input asp-for="Username" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Password">Password</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit">Login</button>
+</form>
