@@ -5,12 +5,13 @@
 
 <div class="container">
     <h2>🔨 Live Auction Room</h2>
-    <p>Welcome, @TempData["Username"]! Place your bids below - prices update in real-time.</p>
+    <p>Welcome, @TempData.Peek("Username")! Place your bids below - prices update in real-time.</p>
 
-    @if (TempData["Message"] != null)
+    @if (TempData.Peek("Message") != null)
     {
-        <div class="alert alert-info">
-            @TempData["Message"]
+        <div class="alert alert-info alert-dismissible fade show">
+            @TempData.Peek("Message")
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
@@ -25,14 +26,14 @@
                             <p class="card-text">@item.Description</p>
                             <div class="mb-3">
                                 <span class="text-muted">Current Price:</span>
-                                <span class="current-price">$@item.CurrentPrice</span>
+                                <span class="current-price fw-bold text-success">$@item.CurrentPrice</span>
                             </div>
                             <form asp-controller="Bidder" asp-action="PlaceBid" method="post" class="bid-form">
                                 <input type="hidden" name="itemId" value="@item.ItemId" />
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input type="number" name="amount" class="form-control bid-input" 
-                                           step="0.01" min="@(item.CurrentPrice + 0.01m)" 
+                                    <input type="number" name="amount" class="form-control bid-input"
+                                           step="0.01" min="@(item.CurrentPrice + 0.01m)"
                                            placeholder="@(item.CurrentPrice + 1m)" required />
                                     <button type="submit" class="btn btn-primary">Place Bid</button>
                                 </div>

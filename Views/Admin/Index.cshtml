@@ -7,14 +7,14 @@
     <div class="row">
         <div class="col-12">
             <h2>📊 Admin Dashboard - Live Bid Monitoring</h2>
-            <p class="text-muted">Real-time view of all auction activity</p>
+            <p class="text-muted">Real-time view of all auction activity | Logged in as: @TempData.Peek("Username")</p>
         </div>
     </div>
 
-    @if (TempData["Message"] != null)
+    @if (TempData.Peek("Message") != null)
     {
         <div class="alert alert-info alert-dismissible fade show">
-            @TempData["Message"]
+            @TempData.Peek("Message")
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -74,7 +74,7 @@
 
     <div class="row mt-4">
         <div class="col-12">
-            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Back to Login</a>
+            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Logout</a>
         </div>
     </div>
 </div>
@@ -96,7 +96,7 @@
             if (table) {
                 const now = new Date();
                 const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-                
+
                 const newRow = document.createElement('tr');
                 newRow.className = 'table-success'; // Highlight new bids
                 newRow.innerHTML = `
@@ -107,10 +107,10 @@
                     <td>${timeString}</td>
                     <td><span class="badge bg-primary">Bidder</span></td>
                 `;
-                
+
                 // Insert at the top of the table
                 table.insertBefore(newRow, table.firstChild);
-                
+
                 // Remove highlight after 3 seconds
                 setTimeout(() => {
                     newRow.classList.remove('table-success');
