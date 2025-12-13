@@ -6,15 +6,15 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h2>📊 Admin Dashboard - Live Bid Monitoring</h2>
-            <p class="text-muted">Real-time view of all auction activity | Logged in as: @TempData.Peek("Username")</p>
+            <h2>Admin Dashboard - Live Bid Monitoring</h2>
+            <p class="text-muted">Real-time view of all auction activity | Logged in as: @ViewBag.Username</p>
         </div>
     </div>
 
-    @if (TempData.Peek("Message") != null)
+    @if (TempData["Message"] != null)
     {
         <div class="alert alert-info alert-dismissible fade show">
-            @TempData.Peek("Message")
+            @TempData["Message"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -73,18 +73,16 @@
     </div>
 
     <div class="row mt-4">
-        <div class="col-12">
-            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Logout</a>
-        </div>
+        <form action="/Home/Logout" method="post">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Admin-specific SignalR handling for real-time bid updates
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof connection !== 'undefined' && connection) {
-                // Listen for bid updates and add new rows to the table
                 connection.on("BidUpdated", function (itemId, newPrice, bidderName) {
                     addNewBidRow(itemId, newPrice, bidderName);
                 });
@@ -98,7 +96,7 @@
                 const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
                 const newRow = document.createElement('tr');
-                newRow.className = 'table-success'; // Highlight new bids
+                newRow.className = 'table-success';
                 newRow.innerHTML = `
                     <td>New</td>
                     <td>Item ${itemId}</td>
@@ -108,10 +106,8 @@
                     <td><span class="badge bg-primary">Bidder</span></td>
                 `;
 
-                // Insert at the top of the table
                 table.insertBefore(newRow, table.firstChild);
 
-                // Remove highlight after 3 seconds
                 setTimeout(() => {
                     newRow.classList.remove('table-success');
                 }, 3000);

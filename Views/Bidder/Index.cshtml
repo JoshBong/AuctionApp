@@ -2,19 +2,16 @@
 @{
     ViewData["Title"] = "Auction Room";
 }
-
 <div class="container">
-    <h2>🔨 Live Auction Room</h2>
-    <p>Welcome, @TempData.Peek("Username")! Place your bids below - prices update in real-time.</p>
-
-    @if (TempData.Peek("Message") != null)
+    <h2>Live Auction Room</h2>
+    <p>Welcome, @ViewBag.Username! Place your bids below - prices update in real-time.</p>
+    @if (TempData["Message"] != null)
     {
         <div class="alert alert-info alert-dismissible fade show">
-            @TempData.Peek("Message")
+            @TempData["Message"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-
     <div class="row">
         @foreach (var item in Model)
         {
@@ -28,7 +25,7 @@
                                 <span class="text-muted">Current Price:</span>
                                 <span class="current-price fw-bold text-success">$@item.CurrentPrice</span>
                             </div>
-                            <form asp-controller="Bidder" asp-action="PlaceBid" method="post" class="bid-form">
+                            <form action="/Bidder/PlaceBid" method="post" class="bid-form">
                                 <input type="hidden" name="itemId" value="@item.ItemId" />
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
@@ -44,7 +41,6 @@
             </div>
         }
     </div>
-
     @if (!Model.Any())
     {
         <div class="alert alert-warning">
@@ -52,10 +48,9 @@
             <p>There are currently no items up for auction. Please check back later!</p>
         </div>
     }
-
     <div class="row mt-4">
-        <div class="col-12">
-            <a asp-controller="Home" asp-action="Login" class="btn btn-outline-secondary">Logout</a>
-        </div>
+        <form action="/Home/Logout" method="post">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
     </div>
 </div>

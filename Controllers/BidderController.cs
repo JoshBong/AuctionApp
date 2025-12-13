@@ -22,20 +22,21 @@ namespace AuctionApp.Controllers
         {
             _logger.LogInformation("=== BIDDER INDEX - Page Requested ===");
 
-            // Check if user is logged in
-            var username = TempData.Peek("Username")?.ToString();
-            var bidderId = TempData.Peek("BidderID");
-            var role = TempData.Peek("Role")?.ToString();
+            // Get user info from SESSION
+            var username = HttpContext.Session.GetString("Username");
+            var bidderId = HttpContext.Session.GetInt32("BidderID");
 
-            _logger.LogInformation($"TempData Username: '{username}'");
-            _logger.LogInformation($"TempData BidderID: '{bidderId}'");
-            _logger.LogInformation($"TempData Role: '{role}'");
+            _logger.LogInformation($"Session Username: '{username}'");
+            _logger.LogInformation($"Session BidderID: '{bidderId}'");
 
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username) || !bidderId.HasValue)
             {
-                _logger.LogWarning("No username in TempData - redirecting to Login");
+                _logger.LogWarning("No session data - redirecting to Login");
                 return RedirectToAction("Login", "Home");
             }
+
+            // Pass username to view using ViewBag
+            ViewBag.Username = username;
 
             try
             {
@@ -59,12 +60,12 @@ namespace AuctionApp.Controllers
         {
             _logger.LogInformation($"=== PLACE BID - ItemID: {itemId}, Amount: {amount} ===");
 
-            var bidderId = TempData.Peek("BidderID") as int?;
-            var username = TempData.Peek("Username")?.ToString();
+            var bidderId = HttpContext.Session.GetInt32("BidderID");
+            var username = HttpContext.Session.GetString("Username");
 
             _logger.LogInformation($"BidderID: {bidderId}, Username: '{username}'");
 
-            if (bidderId == null || string.IsNullOrEmpty(username))
+            if (!bidderId.HasValue || string.IsNullOrEmpty(username))
             {
                 _logger.LogWarning("User not logged in - redirecting to Login");
                 return RedirectToAction("Login", "Home");
@@ -97,6 +98,14 @@ namespace AuctionApp.Controllers
                 _logger.LogError($"Error placing bid: {ex.Message}");
                 throw;
             }
+        }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            _logger.LogInformation("Logout successfully");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Home");
         }
     }
 }

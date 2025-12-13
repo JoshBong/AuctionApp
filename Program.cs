@@ -4,7 +4,8 @@ using AuctionApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddSessionStateTempDataProvider();
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddDistributedMemoryCache();
