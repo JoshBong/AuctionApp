@@ -2,55 +2,85 @@
 @{
     ViewData["Title"] = "Auction Room";
 }
-<div class="container">
-    <h2>Live Auction Room</h2>
-    <p>Welcome, @ViewBag.Username! Place your bids below - prices update in real-time.</p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 style="color: #343a40; font-weight: bold;">Live Auction Room</h2>
+            <p style="font-size: 18px; color: #6c757d;">Welcome, <strong>@ViewBag.Username</strong>! Place your bids below - prices update in real-time.</p>
+        </div>
+    </div>
+
     @if (TempData["Message"] != null)
     {
-        <div class="alert alert-info alert-dismissible fade show">
+        <div class="alert alert-info alert-dismissible fade show" style="padding: 20px; font-size: 16px;">
             @TempData["Message"]
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
+
     <div class="row">
         @foreach (var item in Model)
         {
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-12 mb-3">
                 <div class="auction-item" data-item-id="@item.ItemId">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.ItemName</h5>
-                            <p class="card-text">@item.Description</p>
-                            <div class="mb-3">
-                                <span class="text-muted">Current Price:</span>
-                                <span class="current-price fw-bold text-success">$@item.CurrentPrice</span>
-                            </div>
-                            <form action="/Bidder/PlaceBid" method="post" class="bid-form">
-                                <input type="hidden" name="itemId" value="@item.ItemId" />
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" name="amount" class="form-control bid-input"
-                                           step="0.01" min="@(item.CurrentPrice + 0.01m)"
-                                           placeholder="@(item.CurrentPrice + 1m)" required />
-                                    <button type="submit" class="btn btn-primary">Place Bid</button>
+                    <div class="card" style="border: 2px solid #dee2e6; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <div class="card-body" style="padding: 20px;">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <h5 style="color: #343a40; font-weight: bold; font-size: 20px; margin-bottom: 5px;">@item.ItemName</h5>
+                                    <p style="color: #6c757d; font-size: 14px; margin-bottom: 0;">@item.Description</p>
                                 </div>
-                            </form>
+                                <div class="col-md-3 text-center">
+                                    <span style="font-size: 14px; color: #6c757d; display: block;">Current Price</span>
+                                    <span class="current-price" style="font-size: 28px; font-weight: bold; color: #28a745;">$@item.CurrentPrice</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <form action="/Bidder/PlaceBid" method="post" class="bid-form">
+                                        <input type="hidden" name="itemId" value="@item.ItemId" />
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="font-size: 16px; font-weight: bold;">$</span>
+                                            <input type="number" name="amount" class="form-control bid-input"
+                                                   style="font-size: 16px;"
+                                                   step="1" min="@(item.CurrentPrice + 1m)"
+                                                   placeholder="Enter bid" required />
+                                            <button type="submit" class="btn btn-primary" style="font-size: 14px; padding: 8px 20px; font-weight: bold;">Place Bid</button>
+                                        </div>
+                                        <small style="color: #6c757d; margin-top: 5px; display: block;">Min: $@(item.CurrentPrice + 1m)</small>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </div>
+
     @if (!Model.Any())
     {
-        <div class="alert alert-warning">
+        <div class="alert alert-warning" style="padding: 30px; font-size: 18px;">
             <h4>No Items Available</h4>
             <p>There are currently no items up for auction. Please check back later!</p>
         </div>
     }
-    <div class="row mt-4">
-        <form action="/Home/Logout" method="post">
-            <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
+
+    <div class="row mt-5 mb-4">
+        <div class="col-12">
+            <form action="/Home/Logout" method="post">
+                <button type="submit" class="btn btn-danger btn-lg" style="padding: 12px 30px; font-size: 18px;">Logout</button>
+            </form>
+        </div>
     </div>
 </div>
+
+<style>
+    .auction-item:hover .card {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+
+    .current-price {
+        transition: color 0.5s ease;
+    }
+</style>

@@ -3,8 +3,8 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container">
-    <div class="row">
+<div class="container mt-4">
+    <div class="row mb-4">
         <div class="col-12">
             <h2>Admin Dashboard - Live Bid Monitoring</h2>
             <p class="text-muted">Real-time view of all auction activity | Logged in as: @ViewBag.Username</p>
@@ -21,60 +21,53 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">All Bids (Most Recent First)</h5>
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="bids-table" style="border: 2px solid #dee2e6;">
+                        <thead style="background-color: #343a40; color: white;">
+                            <tr>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Bid ID</th>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Item</th>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Bidder</th>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Amount</th>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Time</th>
+                                <th style="padding: 15px; border: 1px solid #dee2e6;">Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bid in Model.OrderByDescending(b => b.BidTime))
+                            {
+                                <tr data-bid-id="@bid.BidID" style="background-color: white;">
+                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.BidID</td>
+                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.ItemName</td>
+                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.Username</td>
+                                    <td style="padding: 15px; border: 1px solid #dee2e6; font-weight: bold; color: #28a745;">$@bid.Amount</td>
+                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.BidTime.ToString("MM/dd/yyyy HH:mm:ss")</td>
+                                    <td style="padding: 15px; border: 1px solid #dee2e6;">
+                                        <span class="badge @(bid.Role == "Admin" ? "bg-danger" : "bg-primary")" style="padding: 8px 12px; font-size: 14px;">
+                                            @bid.Role
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-                <div class="card-body">
-                    @if (Model.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="bids-table">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Bid ID</th>
-                                        <th>Item</th>
-                                        <th>Bidder</th>
-                                        <th>Amount</th>
-                                        <th>Time</th>
-                                        <th>Role</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var bid in Model.OrderByDescending(b => b.BidTime))
-                                    {
-                                        <tr data-bid-id="@bid.BidID">
-                                            <td>@bid.BidID</td>
-                                            <td>@bid.ItemName</td>
-                                            <td>@bid.Username</td>
-                                            <td class="fw-bold text-success">$@bid.Amount</td>
-                                            <td>@bid.BidTime.ToString("MM/dd/yyyy HH:mm:ss")</td>
-                                            <td>
-                                                <span class="badge @(bid.Role == "Admin" ? "bg-danger" : "bg-primary")">
-                                                    @bid.Role
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            <h5>No Bids Yet</h5>
-                            <p>No bids have been placed yet. Bids will appear here in real-time as they are placed.</p>
-                        </div>
-                    }
+            }
+            else
+            {
+                <div class="alert alert-info" style="padding: 30px; font-size: 18px;">
+                    <h5>No Bids Yet</h5>
+                    <p>No bids have been placed yet. Bids will appear here in real-time as they are placed.</p>
                 </div>
-            </div>
+            }
         </div>
     </div>
 
     <div class="row mt-4">
         <form action="/Home/Logout" method="post">
-            <button type="submit" class="btn btn-danger">Logout</button>
+            <button type="submit" class="btn btn-danger btn-lg" style="padding: 12px 30px;">Logout</button>
         </form>
     </div>
 </div>
@@ -96,20 +89,21 @@
                 const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
                 const newRow = document.createElement('tr');
-                newRow.className = 'table-success';
+                newRow.style.backgroundColor = '#d4edda';
+                newRow.setAttribute('data-bid-id', 'new');
                 newRow.innerHTML = `
-                    <td>New</td>
-                    <td>Item ${itemId}</td>
-                    <td>${bidderName}</td>
-                    <td class="fw-bold text-success">$${amount}</td>
-                    <td>${timeString}</td>
-                    <td><span class="badge bg-primary">Bidder</span></td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6;">New</td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6;">Item ${itemId}</td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6;">${bidderName}</td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6; font-weight: bold; color: #28a745;">$${amount}</td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6;">${timeString}</td>
+                    <td style="padding: 15px; border: 1px solid #dee2e6;"><span class="badge bg-primary" style="padding: 8px 12px; font-size: 14px;">Bidder</span></td>
                 `;
 
                 table.insertBefore(newRow, table.firstChild);
 
                 setTimeout(() => {
-                    newRow.classList.remove('table-success');
+                    newRow.style.backgroundColor = 'white';
                 }, 3000);
             }
         }
