@@ -16,8 +16,6 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Simple configuration - no dependency injection for DLL classes
-    
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

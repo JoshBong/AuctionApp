@@ -45,9 +45,9 @@ INSERT INTO Bidder (Username, Password, Role) VALUES
     ('admin', 'password', 'Admin');
 
 INSERT INTO Item (ItemName, Description, CurrentPrice) VALUES 
-    ('Vintage Watch', 'Beautiful antique watch from 1920s', 150.00),
-    ('Painting', 'Original oil painting by a local artist', 500.00),
-    ('Bicycle', 'Classic road bike in excellent condition', 200.00);
+    ('Vintage Watch', 'Allegedly haunted, keeps great time though', 150.00),
+    ('Mystery Painting', 'Found in a thrift store. Could be priceless. Probably not.', 500.00),
+    ('The Bicycle', 'Classic road bike, one previous owner (a grandma)', 200.00);
 GO
 
 -- Create Stored Procedures

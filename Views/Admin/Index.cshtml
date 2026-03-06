@@ -3,73 +3,71 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2>Admin Dashboard - Live Bid Monitoring</h2>
-            <p class="text-muted">Real-time view of all auction activity | Logged in as: @ViewBag.Username</p>
+<div class="site-header" style="background: transparent; border: none; margin-bottom: 1.5rem;">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="section-title">&#x1F4CB; Bid Monitor</h1>
+            <p class="section-subtitle">Live feed of all auction activity &middot; Logged in as <strong>@ViewBag.Username</strong></p>
         </div>
-    </div>
-
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-info alert-dismissible fade show">
-            @TempData["Message"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    <div class="row">
-        <div class="col-12">
-            @if (Model.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="bids-table" style="border: 2px solid #dee2e6;">
-                        <thead style="background-color: #343a40; color: white;">
-                            <tr>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Bid ID</th>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Item</th>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Bidder</th>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Amount</th>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Time</th>
-                                <th style="padding: 15px; border: 1px solid #dee2e6;">Role</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var bid in Model.OrderByDescending(b => b.BidTime))
-                            {
-                                <tr data-bid-id="@bid.BidID" style="background-color: white;">
-                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.BidID</td>
-                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.ItemName</td>
-                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.Username</td>
-                                    <td style="padding: 15px; border: 1px solid #dee2e6; font-weight: bold; color: #28a745;">$@bid.Amount</td>
-                                    <td style="padding: 15px; border: 1px solid #dee2e6;">@bid.BidTime.ToString("MM/dd/yyyy HH:mm:ss")</td>
-                                    <td style="padding: 15px; border: 1px solid #dee2e6;">
-                                        <span class="badge @(bid.Role == "Admin" ? "bg-danger" : "bg-primary")" style="padding: 8px 12px; font-size: 14px;">
-                                            @bid.Role
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-info" style="padding: 30px; font-size: 18px;">
-                    <h5>No Bids Yet</h5>
-                    <p>No bids have been placed yet. Bids will appear here in real-time as they are placed.</p>
-                </div>
-            }
-        </div>
-    </div>
-
-    <div class="row mt-4">
         <form action="/Home/Logout" method="post">
-            <button type="submit" class="btn btn-danger btn-lg" style="padding: 12px 30px;">Logout</button>
+            <button type="submit" class="btn btn-logout">Sign Out</button>
         </form>
     </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert-bid-success mb-3">
+        @TempData["Message"]
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="card" style="overflow: hidden;">
+        <div class="table-responsive mb-0">
+            <table class="table bids-table mb-0" id="bids-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Bidder</th>
+                        <th>Amount</th>
+                        <th>Time</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bid in Model.OrderByDescending(b => b.BidTime))
+                    {
+                        <tr data-bid-id="@bid.BidID">
+                            <td style="color: var(--text-muted);">@bid.BidID</td>
+                            <td><strong>@bid.ItemName</strong></td>
+                            <td>@bid.Username</td>
+                            <td><strong style="color: var(--success);">$@bid.Amount</strong></td>
+                            <td style="color: var(--text-muted);">@bid.BidTime.ToString("MMM d, h:mm tt")</td>
+                            <td>
+                                <span class="badge-role @(bid.Role == "Admin" ? "badge-admin" : "badge-bidder")">
+                                    @bid.Role
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <h4>No bids yet</h4>
+        <p>Once people start bidding, activity will show up here in real-time.</p>
+    </div>
+}
+
+<div class="footer-area">
+    <p>Josh's Auction Admin</p>
 </div>
 
 @section Scripts {
@@ -84,28 +82,25 @@
 
         function addNewBidRow(itemId, amount, bidderName) {
             const table = document.querySelector('#bids-table tbody');
-            if (table) {
-                const now = new Date();
-                const timeString = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            if (!table) return;
 
-                const newRow = document.createElement('tr');
-                newRow.style.backgroundColor = '#d4edda';
-                newRow.setAttribute('data-bid-id', 'new');
-                newRow.innerHTML = `
-                    <td style="padding: 15px; border: 1px solid #dee2e6;">New</td>
-                    <td style="padding: 15px; border: 1px solid #dee2e6;">Item ${itemId}</td>
-                    <td style="padding: 15px; border: 1px solid #dee2e6;">${bidderName}</td>
-                    <td style="padding: 15px; border: 1px solid #dee2e6; font-weight: bold; color: #28a745;">$${amount}</td>
-                    <td style="padding: 15px; border: 1px solid #dee2e6;">${timeString}</td>
-                    <td style="padding: 15px; border: 1px solid #dee2e6;"><span class="badge bg-primary" style="padding: 8px 12px; font-size: 14px;">Bidder</span></td>
-                `;
+            const now = new Date();
+            const timeStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                          + ', ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-                table.insertBefore(newRow, table.firstChild);
+            const row = document.createElement('tr');
+            row.style.background = 'var(--success-soft)';
+            row.innerHTML = `
+                <td style="color: var(--text-muted);">New</td>
+                <td><strong>Item ${itemId}</strong></td>
+                <td>${bidderName}</td>
+                <td><strong style="color: var(--success);">$${amount}</strong></td>
+                <td style="color: var(--text-muted);">${timeStr}</td>
+                <td><span class="badge-role badge-bidder">Bidder</span></td>
+            `;
 
-                setTimeout(() => {
-                    newRow.style.backgroundColor = 'white';
-                }, 3000);
-            }
+            table.insertBefore(row, table.firstChild);
+            setTimeout(() => { row.style.background = ''; }, 3000);
         }
     </script>
 }
